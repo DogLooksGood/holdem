@@ -1,1 +1,2 @@
-{:crux {:opts {:crux.http-server/server {:port 3000}}}}
+{:web  {:port 4000},
+ :crux {:opts {:crux.http-server/server {:port 3000}}}}

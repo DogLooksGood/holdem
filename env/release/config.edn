@@ -1,1 +1,2 @@
-{:crux {:opts {}}}
+{:web  {:port 4000}
+ :crux {:opts {}}}

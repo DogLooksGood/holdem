@@ -2,11 +2,12 @@
   (:require [aleph.http :as http]
             [mount.core :as mount]
             [poker.web.router :refer [app]]
-            [poker.web.ws :as ws]))
+            [poker.web.ws :as ws]
+            [poker.system.config :refer [config]]))
 
 (mount/defstate web-server
   :start
-  (http/start-server #'app {:port 4000})
+  (http/start-server #'app (get config :web {:port 4000}))
   :stop
   (.close web-server))
 
