@@ -1,0 +1,63 @@
+{:paths     ["src/clj" "src/cljc" "resources"],
+ :deps      {aleph/aleph                    {:mvn/version "0.4.6"},
+             compojure/compojure            {:mvn/version "1.6.2"},
+             com.cognitect/transit-clj      {:mvn/version "1.0.324"},
+             com.taoensso/sente             {:mvn/version "1.16.2"},
+             commons-codec/commons-codec    {:mvn/version "1.15"},
+             cprop/cprop                    {:mvn/version "0.1.17"},
+             hiccup/hiccup                  {:mvn/version "1.0.5"},
+             org.clojure/clojure            {:mvn/version "1.10.3"},
+             org.clojure/core.async         {:mvn/version "1.3.618"},
+             org.clojure/spec.alpha         {:mvn/version "0.2.194"},
+             org.clojure/tools.logging      {:mvn/version "1.1.0"},
+             org.slf4j/slf4j-api            {:mvn/version "1.7.31"},
+             ch.qos.logback/logback-core    {:mvn/version "1.2.3"},
+             ch.qos.logback/logback-classic {:mvn/version "1.2.3"},
+             ring-transit/ring-transit      {:mvn/version "0.1.6"},
+             ring/ring-core                 {:mvn/version "1.9.0"},
+             ring/ring-defaults             {:mvn/version "0.3.2"},
+             pro.juxt.crux/crux-core        {:mvn/version "1.17.1"},
+             pro.juxt.crux/crux-http-server {:mvn/version "1.17.1"},
+             mount/mount                    {:mvn/version "0.1.16"},
+             metosin/reitit                 {:mvn/version "0.5.13"},
+             amalloy/ring-gzip-middleware   {:mvn/version "0.1.4"}},
+ :aliases
+ {:cljs        {:extra-paths ["env/dev" "src/cljs" "test/clj"],
+                :extra-deps  {babashka/process           {:mvn/version "0.0.2"},
+                              com.cognitect/transit-cljs {:mvn/version "0.8.264"},
+                              org.clojure/clojurescript  {:mvn/version "1.10.879"},
+                              cljs-ajax/cljs-ajax        {:mvn/version "0.8.3"},
+                              re-frame/re-frame          {:mvn/version "1.2.0"},
+                              reagent/reagent            {:mvn/version "1.1.0"},
+                              binaryage/devtools         {:mvn/version "1.0.3"},
+                              akiroz.re-frame/storage    {:mvn/version "0.1.4"},
+                              thheller/shadow-cljs       {:mvn/version "2.15.3"}}},
+  :dev         {:extra-paths ["test/clj" "test/cljs"],
+                :extra-deps  {nubank/workspaces  {:mvn/version "1.1.1"},
+                              day8.re-frame/test {:mvn/version "0.1.5"}},
+                :jvm-opts    ["--add-opens"
+                              "java.base/jdk.internal.misc=ALL-UNNAMED"
+                              "-XX:-OmitStackTraceInFastThrow"
+                              "-XX:+TieredCompilation"
+                              "-XX:TieredStopAtLevel=1"
+                              "-Dio.netty.tryReflectionSetAccessible=true"
+                              "-Dorg.slf4j.simpleLogger.defaultLogLevel=debug"]},
+  :coverage    {:extra-deps {cloverage/cloverage {:mvn/version "1.2.2"}},
+                :main-opts  ["-m" "cloverage.coverage" "-p" "src/clj" "-s" "test/clj"]},
+  :test-runner {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.861"}},
+                :main-opts  ["-m" "kaocha.runner"]},
+  :package     {:extra-paths ["env/release"]},
+  :compile     {:extra-paths ["classes"],
+                :jvm-opts    ["-Dclojure.compiler.direct-linking=true"],
+                :main-opts   ["-e" "(compile 'poker.main)"]},
+  :uberjar     {:replace-deps  {uberdeps/uberdeps {:mvn/version "1.0.4"}},
+                :replace-paths [],
+                :main-opts
+                ["-m"
+                 "uberdeps.uberjar"
+                 "--target"
+                 "target/holdem.jar"
+                 "--aliases"
+                 ":compile:package"
+                 "--main-class"
+                 "poker.main"]}}}

@@ -1,0 +1,188 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-transition {
+  transition: background-color 1s;
+}
+
+.message-box-opacity {
+  transition: opacity 0.3s, background 0.3s;
+}
+
+.award {
+  transition: top 1.5s, left 1.5s, opacity 2s;
+}
+
+@keyframes new-card {
+  from {
+    @apply ml-24 opacity-0;
+  }
+  to {
+    @apply ml-0 opacity-100;
+  }
+}
+
+@keyframes showdown-card {
+  from {
+    transform: rotateY(90deg);
+  }
+  to {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes showdown-fold-card {
+  from {
+    @apply bottom-2;
+  }
+  to {
+    @apply -bottom-6;
+  }
+}
+
+@keyframes countdown-bar {
+  0% {
+    @apply w-full bg-green-500
+  }
+  50% {
+    @apply w-1/2 bg-yellow-500
+  }
+  100% {
+    @apply w-0 bg-red-800;;
+  }
+}
+
+@keyframes message-box-fade {
+  0% {
+    @apply opacity-90 bg-gray-800 bg-opacity-50;
+  }
+  90% {
+    @apply opacity-90 bg-gray-800 bg-opacity-50;
+  }
+  100% {
+    @apply opacity-0 bg-transparent;
+  }
+}
+
+@keyframes message-popup-fade {
+  0% {
+    @apply opacity-100;
+  }
+  90% {
+    @apply opacity-100;
+  }
+  100% {
+    @apply opacity-0;
+  }
+}
+
+@keyframes deal-card {
+  0% {
+    @apply opacity-100;
+  }
+  99% {
+    @apply opacity-100;
+  }
+  100% {
+    @apply opacity-0;
+  }
+}
+
+.deal-card {
+  transition: top 0.5s, left 0.5s;
+  animation-name: deal-card;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+  animation-timing-function: linear;
+}
+
+.message-box-fade {
+  animation-name: message-box-fade;
+  animation-duration: 5s;
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+  animation-timing-function: linear;
+}
+
+.message-popup-fade {
+  animation-name: message-popup-fade;
+  animation-duration: 5s;
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+  animation-timing-function: linear;
+}
+
+.new-card {
+  animation-name: new-card;
+  animation-duration: .5s;
+  animation-iteration-count: 1;
+}
+
+.new-card-2 {
+  animation-name: new-card;
+  animation-duration: .5s;
+  animation-iteration-count: 1;
+  animation-delay: 2s;
+  animation-fill-mode: both;
+}
+
+.new-card-3 {
+  @apply opacity-0;
+  animation-name: new-card;
+  animation-duration: .5s;
+  animation-iteration-count: 1;
+  animation-delay: 4s;
+  animation-fill-mode: both;
+}
+
+/* We use two class to force re-render countdown */
+
+.countdown-bar {
+  @apply h-1 opacity-90;
+  animation-name: countdown-bar;
+  animation-duration: 30s;
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+  animation-timing-function: linear;
+}
+
+.showdown-card {
+  @apply transform;
+  animation-name: showdown-card;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
+}
+
+.showdown-fold-card {
+  animation-name: showdown-fold-card;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+ /* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.full-h {
+  height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
+}
