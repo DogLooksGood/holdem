@@ -135,4 +135,4 @@
 
 (defn make-event-loop
   []
-  (let [input (a/chan 10) output (a/chan (a/sliding-buffer 1))] (->EventLoop input output)))
+  (let [input (a/chan 100) output (a/chan 100)] (->EventLoop input output)))
