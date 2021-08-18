@@ -4,7 +4,7 @@ Now, the online demo is available!
 
 [Online Demo](https://holdem.fun)
 
-![screencast](https://user-images.githubusercontent.com/11796018/129846225-13638922-b1f4-4e04-96dd-2a4129192860.png "Screencast")
+![screencast](https://user-images.githubusercontent.com/11796018/129900764-999487ac-a8aa-4949-890b-afc5a0c3402c.png "Screencast")
 A lightweight Texas Hold'em Poker game, WIP.
 
 ## Install requirements
