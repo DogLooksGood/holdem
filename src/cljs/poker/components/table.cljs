@@ -71,7 +71,7 @@
   (let [deals (->> (concat players players)
                    (filter (comp #{:player-status/in-action :player-status/wait-for-action}
                                  :status))
-                   (map (comp :root
+                   (map (comp (if ?off-seat :ob-root :root)
                               seat->class
                               #(get-player-relative-position
                                 players
@@ -133,7 +133,7 @@
          value
          (-> (get-player-relative-position players id ?off-seat)
              seat->class
-             :root)])])])
+             (get (if ?off-seat :ob-root :root)))])])])
 
 (defn render-return-bets
   [{:keys [return-bets players ?off-seat]}]

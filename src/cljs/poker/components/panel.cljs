@@ -151,7 +151,7 @@
       [:div.flex-1.relative
        [:div.absolute.bottom-0.left-0.right-0.p-1.pointer-events-auto
         [message-box messages]]]
-      [:div.h-24
+      [:div.h-24.pointer-events-auto
        (cond
          (= :player-status/off-seat status)
          [:div.text-md.flex.justify-center.items-center.h-24.text-gray-500
