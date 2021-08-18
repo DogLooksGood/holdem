@@ -1,5 +1,7 @@
 # Holdem
 
+A lightweight Texas Hold'em Poker game, WIP.
+
 ## Install requirements
 ```sh
 clojure -P
