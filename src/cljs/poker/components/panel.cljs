@@ -144,12 +144,12 @@
         buttons-set (get-buttons-set players current-player street-bet)
         pot-val     (transduce (map :value) + 0 pots)]
     ;; container
-    [:div.bg-gray-900.md:bg-transparent.md:absolute.md:left-0.md:bottom-0.md:right-0.flex.justify-end.items-stretch.h-36.self-stretch
+    [:div.bg-gray-900.md:bg-transparent.md:pointer-events-none.md:absolute.md:left-0.md:bottom-0.md:right-0.flex.justify-end.items-stretch.h-36.self-stretch
      ;; right part
      [:div.w-full.sm:w-72.lg:w-96.md:max-w-full.flex.flex-col.justify-end.items-stretch
       ;; message box
       [:div.flex-1.relative
-       [:div.absolute.bottom-0.left-0.right-0.p-1
+       [:div.absolute.bottom-0.left-0.right-0.p-1.pointer-events-auto
         [message-box messages]]]
       [:div.h-24
        (cond

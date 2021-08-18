@@ -59,9 +59,9 @@
            (for [msg (reverse (take 3 msgs))]
              ^{:key (:message/id msg)}
              [render-message msg])]]
-         [:div.w-full.mt-2.h-10.message-box-opacity.flex.flex-col.justify-end.items-stretch.relative
+         [:div.w-full.mt-2.h-10.message-box-opacity.flex.relative
           {:class (if expand ["opacity-100"] ["opacity-50"])}
-          [:input.h-10.bg-gray-900.pr-6
+          [:input.h-10.bg-gray-900.pr-10.flex-1
            {:type        "text",
             :on-key-down on-message-box-keydown,
             :on-focus    #(do (swap! state* assoc :status :expand) false),
