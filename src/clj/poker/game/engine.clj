@@ -98,15 +98,15 @@
         (catch clojure.lang.ExceptionInfo e
           (log/warnf (ex-message e)))
         (catch Exception e
-          (log/errorf e "unexpected error")
+          (log/errorf e "unexpected error, event: %s" event)
           false))))
   (validate-event! [this event] (eh/validate-game-event this event))
   (apply-event [this event]
     ;; (log/debugf "apply game event: %s" (prn-str event))
     (try
       (apply-game-event* this event)
-      (catch Exception ex
-        (log/errorf ex "unexpected error")
+      (catch Exception e
+        (log/errorf e "unexpected error, event: %s" event)
         this)))
   (next-event [_this] (first next-events))
   (has-next-event? [_this] (boolean (seq next-events)))

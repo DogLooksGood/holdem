@@ -230,6 +230,14 @@
           (assoc :dispatch-later dispatch-later))
         {:db db}))))
 
+(re-frame/reg-event-fx :game-server-event/invalid-input
+  (fn [{:keys [db]} [_ {:game/keys [invalid-event id]}]]
+    (if-not (= (:game/id db) id)
+      {:db db}
+      (do
+        (.error js/console "Invalid event:" invalid-event)
+        {:db db}))))
+
 ;; Client local scheduled events
 
 (re-frame/reg-event-fx :game/local-winner-awards

@@ -27,10 +27,6 @@
   [game-id e]
   (re-frame/dispatch [:lobby/join-game {:game/id game-id}]))
 
-(defn on-back-to-game
-  [game-id e]
-  (re-frame/dispatch [:lobby/back-to-game {:game/id game-id}]))
-
 (defn lobby-page
   []
   (let [games*       (re-frame/subscribe [:lobby/games])
@@ -58,9 +54,7 @@
             (let [inside (some #(= player-id %) players)]
               [:div.m-1.border.border-gray-700.flex.flex-col.justify-between.items-stretch.hover:border-blue-500
                {:on-click
-                (if inside
-                    (partial on-back-to-game id)
-                  (partial on-join-game id))}
+                (partial on-join-game id)}
                [:div.flex.justify-between.items-center.p-1
                 {:class (if inside ["bg-blue-200"] ["bg-gray-200"])}
                 [:div title]

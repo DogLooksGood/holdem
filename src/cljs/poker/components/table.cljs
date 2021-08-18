@@ -371,9 +371,8 @@
 
 (defn table-loading
   []
-  [:div.bg-gray-600.flex-1.flex.items-stretch.p-12
-   [:div.bg-blue-600.border.border-4.border-blue-900.flex-1.rounded-full.flex.justify-center.items-center
-    [:div.text-white.font-2xl "LOADING"]]])
+  [:div.bg-blue-900.flex.place-content-center.text-2xl
+   "LOADING"])
 
 (defn table
   [{:keys [size current-player], :or {size 6}, :as props}]
@@ -381,5 +380,4 @@
     6
     (if (= :player-status/off-seat (:status current-player))
       [table-seat-list props]
-      [table-6 props])
-    [table-loading]))
+      [table-6 props])))

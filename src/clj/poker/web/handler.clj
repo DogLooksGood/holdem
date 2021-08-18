@@ -64,17 +64,17 @@
 
 (defn alive
   [req]
-  (log/infof "alive, session: %s" (prn-str (:session req)))
+  (log/debugf "alive, session: %s" (prn-str (:session req)))
   {:status 200, :body "ok"})
 
 (defmethod ws/handle-event :test/test
   [_ctx event]
-  (log/infof "test event: %s" (prn-str event)))
+  (log/debugf "test event: %s" (prn-str event)))
 
 (defmethod ws/handle-event :lobby/create-game
   [_ctx {:keys [?data ?reply-fn]}]
   (try
-    (log/infof "player create game, ?data: %s" ?data)
+    (log/debugf "player create game, ?data: %s" ?data)
     (let [token (:player/token ?data)
           {:player/keys [id avatar]} (account/auth-player-by-token! token)
           ret   (lobby/create-game! (assoc ?data
@@ -108,7 +108,7 @@
 (defmethod ws/handle-event :lobby/join-game
   [_ctx {:keys [?data ?reply-fn]}]
   (try
-    (log/infof "player join game: %s" ?data)
+    (log/debugf "player join game: %s" ?data)
     (let [token (:player/token ?data)
           {:player/keys [id avatar]} (account/auth-player-by-token! token)
           ret   (lobby/join-game!
@@ -124,7 +124,7 @@
 (defmethod ws/handle-event :lobby/leave-game
   [_ctx {:keys [?data ?reply-fn]}]
   (try
-    (log/infof "player leave game: %s" ?data)
+    (log/debugf "player leave game: %s" ?data)
     (let [token     (:player/token ?data)
           player-id (:player/id (account/auth-player-by-token! token))
           ret       (lobby/leave-game! (assoc ?data :player/id player-id))]
@@ -135,13 +135,13 @@
 
 (defmethod ws/handle-event :chsk/uidport-open
   [_ctx {:keys [uid]}]
-  (log/infof "player connected: %s" uid)
+  (log/debugf "player connected: %s" uid)
   (a/>!! pub-bus [:lobby-output/updated]))
 
 (defmethod ws/handle-event :chsk/uidport-close
   [_ctx {:keys [?data uid]}]
   (try
-    (log/infof "player leave game due to websocket disconnect: %s" ?data)
+    (log/debugf "player leave game due to websocket disconnect: %s" ?data)
     (lobby/leave-all-games! {:player/id uid})
     (a/>!! pub-bus [:lobby-output/updated])
     (catch Exception ex
@@ -150,7 +150,7 @@
 (defmethod ws/handle-event :game/call
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "player %s call: %s" (:player/name uid) ?data)
+    (log/debugf "player %s call: %s" (:player/name uid) ?data)
     (let [{:keys [game-id]} ?data
           game (game/get-game game-id)]
       (?reply-fn (game/send-game-event game [:game-event/player-call {:player-id uid}])))
@@ -160,7 +160,7 @@
 (defmethod ws/handle-event :game/bet
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s bet: %s" (:player/name uid) ?data)
+    (log/debugf "Player %s bet: %s" (:player/name uid) ?data)
     (let [{:keys [bet game-id]} ?data
           game (game/get-game game-id)]
       (?reply-fn (game/send-game-event game [:game-event/player-bet {:player-id uid, :bet bet}])))
@@ -170,7 +170,7 @@
 (defmethod ws/handle-event :game/check
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s check: %s" (:player/name uid) ?data)
+    (log/debugf "Player %s check: %s" (:player/name uid) ?data)
     (let [{:keys [game-id]} ?data
           game (game/get-game game-id)]
       (?reply-fn (game/send-game-event game [:game-event/player-check {:player-id uid}])))
@@ -180,7 +180,7 @@
 (defmethod ws/handle-event :game/fold
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s fold: %s" (:player/name uid) ?data)
+    (log/debugf "Player %s fold: %s" (:player/name uid) ?data)
     (let [{:keys [game-id]} ?data
           game (game/get-game game-id)]
       (?reply-fn (game/send-game-event game [:game-event/player-fold {:player-id uid}])))
@@ -190,7 +190,7 @@
 (defmethod ws/handle-event :game/join-bet
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s join-bet: %s" (:player/name uid) ?data)
+    (log/debugf "Player %s join-bet: %s" (:player/name uid) ?data)
     (let [{:keys [game-id]} ?data
           game (game/get-game game-id)]
       (?reply-fn (game/send-game-event game [:game-event/player-join-bet {:player-id uid}])))
@@ -200,7 +200,7 @@
 (defmethod ws/handle-event :game/musk
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s musk: %s" (:player/name uid) ?data)
+    (log/debugf "Player %s musk: %s" (:player/name uid) ?data)
     (let [{:keys [game-id]} ?data
           game (game/get-game game-id)]
       (?reply-fn (game/send-game-event game [:game-event/player-musk {:player-id uid}])))
@@ -210,7 +210,7 @@
 (defmethod ws/handle-event :game/raise
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s raise: %s" (:player/name uid) ?data)
+    (log/debugf "Player %s raise: %s" (:player/name uid) ?data)
     (let [{:keys [raise game-id]} ?data
           game (game/get-game game-id)]
       (?reply-fn (game/send-game-event game
@@ -221,7 +221,7 @@
 (defmethod ws/handle-event :game/request-deal-times
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s request deal times: %s" (:player/name uid) ?data)
+    (log/debugf "Player %s request deal times: %s" (:player/name uid) ?data)
     (let [{:keys [deal-times game-id]} ?data
           game (game/get-game game-id)]
       (?reply-fn (game/send-game-event game
@@ -234,7 +234,7 @@
 (defmethod ws/handle-event :game/buyin
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s buyin" (:player/name uid))
+    (log/debugf "Player %s buyin" (:player/name uid))
     (let [{:keys [seat game-id]} ?data
           game  (game/get-game game-id)
           stack 20000]
@@ -250,7 +250,7 @@
 (defmethod ws/handle-event :game/get-current-state
   [_cxt {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s get current state" (:player/name uid))
+    (log/debugf "Player %s get current state" (:player/name uid))
     (let [{:keys [game-id]} ?data
           game (game/get-game game-id)]
       (?reply-fn (game/send-game-event
@@ -262,7 +262,7 @@
 (defmethod ws/handle-event :message/new-message
   [_ctx {:keys [?data uid ?reply-fn]}]
   (try
-    (log/infof "Player %s send message" (:player/name uid))
+    (log/debugf "Player %s send message" (:player/name uid))
     (let [{:keys [game-id content]} ?data
           params {:message/game-id game-id,
                   :message/content content,

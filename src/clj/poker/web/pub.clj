@@ -30,6 +30,16 @@
     :ladder-event/player-buyin    (ladder/player-buyin data)
     :ladder-event/player-inc-hand (ladder/player-inc-hands data)))
 
+(defmethod handle-server-event :game-output/invalid-event
+  [[_ {:keys [props], :as state} [_ event-params :as event]]]
+  (when-let [uid (:player-id event-params)]
+    (log/infof "Publish player: %s invalid event: %s" (:player/name uid) event)
+    (ws/send! uid
+              [:game-server-event/invalid-input
+               {:game/invalid-event event,
+                :game/id            (:game/id props),
+                :game/state         state}])))
+
 ;; we need remove states those can't be shared
 (defmethod handle-server-event :game-output/engine-state
   [[_ state event]]

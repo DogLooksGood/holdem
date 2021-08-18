@@ -37,6 +37,7 @@
 (defn throw-cant-bet! [event] (throw (ex-info "Can't bet" {:event event})))
 (defn throw-bet-is-too-small! [event] (throw (ex-info "Bet is too small" {:event event})))
 (defn throw-raise-is-too-small! [event] (throw (ex-info "Raise is too small" {:event event})))
+(defn throw-cant-call! [event] (throw (ex-info "Can't call" {:event event})))
 (defn throw-cant-check! [event] (throw (ex-info "Can't check" {:event event})))
 (defn throw-cant-raise! [event] (throw (ex-info "Can't raise" {:event event})))
 (defn throw-invalid-times! [event] (throw (ex-info "Invalid times" {:event event})))
@@ -91,6 +92,15 @@
   [state event seat]
   (when (get-in state [:seats seat])
     (throw-seat-is-occupied! event)))
+
+(defn assert-player-can-call!
+  [state event player-id]
+  (let [{:keys [street-bet]} state
+        current-bet (or (peek (get-in state [:players player-id :bets])) 0)]
+    (when-not (pos? street-bet)
+      (throw-cant-call! event))
+    (when-not (> street-bet current-bet)
+      (throw-cant-call! event))))
 
 (defn assert-game-can-start!
   [state event]
@@ -213,6 +223,10 @@
     event]]
   (assert-player-not-in-game! game-state event id))
 
+(defmethod validate-game-event :game-event/player-leave
+  [game-state [_ {:keys [player-id] :as event}]]
+  (assert-player-id! game-state event player-id))
+
 ;; Check player id
 ;; Ensure player status is off-seat
 ;; Ensure stack-add is between max-buyin & min-buyin
@@ -247,7 +261,8 @@
    [_ {:keys [player-id]}
     :as
     event]]
-  (assert-action-player-id! game-state event player-id))
+  (assert-action-player-id! game-state event player-id)
+  (assert-player-can-call! game-state event player-id))
 
 (defmethod validate-game-event :game-event/player-bet
   [game-state
@@ -336,11 +351,6 @@
       (impl/remove-player game-state player-id)
       ;; mark player's network is dropout
       (impl/mark-player-leave game-state player-id))))
-
-(defmethod apply-game-event :game-event/player-add-stack
-  [game-state [_ {:keys [player-id stack-add]}]]
-  (-> game-state
-      (update-in [:players player-id :stack] + stack-add)))
 
 ;; Buyin will trigger a game-start immediately.
 (defmethod apply-game-event :game-event/player-buyin
@@ -758,7 +768,7 @@
         rep-bets (conj (pop bets) new-bet)]
     (-> game-state
         (update-in [:players player-id] assoc :status status :bets rep-bets :stack (- stack raise))
-        (assoc :min-raise ((fnil max 0) min-raise (- new-bet street-bet)))
+        (assoc :min-raise ((fnil max 0) min-raise (- new-bet (or street-bet 0))))
         (update :next-events
                 conj
                 [:game-event/count-pot {}]

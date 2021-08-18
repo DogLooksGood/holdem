@@ -9,6 +9,7 @@
 
 (def sse-event-types
   #{:game-server-event/game-state-updated
+    :game-server-event/invalid-input
     :game-server-event/lobby-updated
     :game-server-event/player-action
     :chat-server-event/new-message})

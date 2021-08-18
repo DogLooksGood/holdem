@@ -61,10 +61,10 @@
              [render-message msg])]]
          [:div.w-full.mt-2.h-10.message-box-opacity.flex.flex-col.justify-end.items-stretch.relative
           {:class (if expand ["opacity-100"] ["opacity-50"])}
-          [:input.h-10.bg-gray-900
+          [:input.h-10.bg-gray-900.pr-6
            {:type        "text",
             :on-key-down on-message-box-keydown,
             :on-focus    #(do (swap! state* assoc :status :expand) false),
             :on-blur     #(swap! state* assoc :status :idle)}]
-          [:div.absolute.right-2.top-0.bottom-0.z-50.text-white.flex.items-center.justify-center.text-2xl
+          [:div.absolute.right-2.top-0.bottom-0.z-50.text-white.flex.items-center.justify-center.w-6.text-2xl
            "💬"]]]))))

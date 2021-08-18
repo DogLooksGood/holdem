@@ -45,6 +45,12 @@
      (doseq [e ladder-events]
        (a/>! output [:ladder/event eng e])))))
 
+(defn publish-invalid-input-event
+  "publish invalid input event."
+  [output eng invalid-event]
+  (a/go
+    (a/>! output [:game-output/invalid-event eng invalid-event])))
+
 (defn event-loop-run
   "This is the function for event loop iteration.
 
@@ -91,6 +97,7 @@
             (and (= port input) (some? evt))
             (do
               (log/warnf "Skipped invalid input event (sched:%d) %s" (count tout-chs) evt)
+              (a/<! (publish-invalid-input-event output eng evt))
               (recur eng tout-chs nil))
             ;; Valid event from timeout channel, apply, recur without current timeout channel
             (and (tout-chs port)
