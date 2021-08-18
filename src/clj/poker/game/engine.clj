@@ -15,7 +15,7 @@
    :seats-count 6,
    :min-buyin   5000,
    :max-buyin   20000
-   :max-stack   30000})
+   :max-stack   70000})
 
 (def default-engine-attrs
   {:status             :game-status/idle,
