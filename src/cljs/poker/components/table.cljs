@@ -14,32 +14,49 @@
 ;; utilities
 
 (def seat->class
-  {1 {:root ["absolute" "left-1/2" "top-full" "md:left-1/5"],
-      :bet  ["absolute" "right-1/2" "-top-12"]},
+  {1 {:root    ["absolute" "left-1/2" "top-full" "md:left-1/5"],
+      :ob-root ["absolute" "left-1/2" "top-full"],
+      :bet     ["absolute" "right-1/2" "-top-12"],
+      :ob-bet  ["absolute" "right-1/2" "-top-12"]},
 
-   2 {:root ["absolute" "left-0" "top-4/5" "md:top-1/3"],
-      :bet  ["absolute" "bottom-0" "-right-6" "md:-right-12"]},
+   2 {:root    ["absolute" "left-0" "top-4/5" "md:top-1/3"],
+      :ob-root ["absolute" "left-0" "top-4/5"],
+      :bet     ["absolute" "bottom-0" "-right-6" "md:-right-12"],
+      :ob-bet  ["absolute" "bottom-0" "-right-6"]},
 
-   3 {:root ["absolute" "top-1/6" "left-0" "md:top-0" "md:left-1/4"],
-      :bet  ["absolute" "bottom-0" "-right-6" "md:-bottom-12" "md:right-1/4"]},
+   3 {:root    ["absolute" "top-1/6" "left-0" "md:top-0" "md:left-1/4"],
+      :ob-root ["absolute" "top-1/6" "left-0"],
+      :bet     ["absolute" "bottom-0" "-right-6" "md:-bottom-12" "md:right-1/4"],
+      :ob-bet  ["absolute" "bottom-0" "-right-6"]},
 
-   4 {:root ["absolute" "left-1/2" "top-0" "md:left-1/2"],
-      :bet  ["absolute" "left-1/2" "-bottom-12"]},
+   4 {:root    ["absolute" "left-1/2" "top-0" "md:left-1/2"],
+      :ob-root ["absolute" "left-1/2" "top-0"],
+      :bet     ["absolute" "left-1/2" "-bottom-12"],
+      :ob-bet  ["absolute" "left-1/2" "-bottom-12"]},
 
-   5 {:root ["absolute" "left-full" "top-1/6" "md:top-0" "md:left-3/4"],
-      :bet  ["absolute" "bottom-0" "-left-6" "md:-bottom-12" "md:left-1/2"]},
+   5 {:root    ["absolute" "left-full" "top-1/6" "md:top-0" "md:left-3/4"],
+      :ob-root ["absolute" "left-full" "top-1/6"],
+      :bet     ["absolute" "bottom-0" "-left-6" "md:-bottom-12" "md:left-1/2"],
+      :ob-bet  ["absolute" "bottom-0" "-left-6"]},
 
-   6 {:root ["absolute" "left-full" "top-4/5" "md:top-1/3"],
-      :bet  ["absolute" "bottom-0" "-left-6" "md:-left-12"]}})
+   6 {:root    ["absolute" "left-full" "top-4/5" "md:top-1/3"],
+      :ob-root ["absolute" "left-full" "top-4/5"],
+      :bet     ["absolute" "bottom-0" "-left-6" "md:-left-12"],
+      :ob-bet  ["absolute" "bottom-0" "-left-6"]}})
 
 
 (defn get-player-relative-position
-  [players player-id]
-  (->> players
-       (keep-indexed (fn [idx p]
-                       (when (= player-id (:id p))
-                         (inc idx))))
-       first))
+  [players player-id ?off-seat]
+  (if ?off-seat
+    (->> players
+         (filter #(= player-id (:id %)))
+         first
+         :seat)
+    (->> players
+         (keep-indexed (fn [idx p]
+                         (when (= player-id (:id p))
+                           (inc idx))))
+         first)))
 
 ;; event handler
 
@@ -50,11 +67,17 @@
 ;; renderer
 
 (defn render-deal-card-animation
-  [players]
+  [{:keys [players ?off-seat]}]
   (let [deals (->> (concat players players)
                    (filter (comp #{:player-status/in-action :player-status/wait-for-action}
                                  :status))
-                   (map (comp :root seat->class (partial get-player-relative-position players) :id))
+                   (map (comp :root
+                              seat->class
+                              #(get-player-relative-position
+                                players
+                                %
+                                ?off-seat)
+                              :id))
                    (map-indexed (fn [idx cls]
                                   {:cls       cls,
                                    :idx       idx,
@@ -96,11 +119,11 @@
         [stack {:value value}]]])))
 
 (defn render-winner-awards
-  [{:keys [pots players awards]}]
+  [{:keys [pots players ?off-seat]}]
   ;; (log/info "render winner awards, pots:" pots)
   ;; (log/info "render winner awards, awards:" awards)
   [:div
-   (for [[idx {:keys [winner-ids player-ids value]}] (map-indexed vector pots)]
+   (for [[idx {:keys [winner-ids value]}] (map-indexed vector pots)]
      ^{:key (str "pot-" idx)}
      [:div
       (for [id winner-ids]
@@ -108,21 +131,22 @@
         [render-winner-award-1
          idx
          value
-         (-> (get-player-relative-position players id)
+         (-> (get-player-relative-position players id ?off-seat)
              seat->class
              :root)])])])
 
 (defn render-return-bets
-  [{:keys [return-bets players]}]
+  [{:keys [return-bets players ?off-seat]}]
+
   [:div
    (for [[id value] return-bets]
      ^{:key (str id)}
      [render-winner-award-1
       0
       value
-      (-> (get-player-relative-position players id)
+      (-> (get-player-relative-position players id ?off-seat)
           seat->class
-          :root)])])
+          (get (if ?off-seat :ob-root :root)))])])
 
 (defn render-static-cards
   [cards skip-n]
@@ -229,8 +253,12 @@
        (str "POT: " value))]))
 
 (defn render-empty-seat
-  []
-  [:div.w-24.h-24.border.border-dashed.border-gray-300.opacity-50.rounded-full])
+  [seat ?off-seat]
+  (if ?off-seat
+    [:div.w-24.h-24.border.border-dashed.border-gray-300.opacity-50.rounded-full.text-gray-300.flex.place-content-center.text-5xl.hover:bg-blue-800.cursor-pointer
+     {:on-click (partial on-buyin {:seat seat})}
+     "☟"]
+    [:div.w-24.h-24.border.border-dashed.border-gray-300.opacity-50.rounded-full]))
 
 (defn render-player-last-message
   [msg]
@@ -258,64 +286,38 @@
     :local/game-status game-status}])
 
 (defn render-player-seat
-  [{:keys [status], :as player-state}]
+  [{:keys [status seat], :as player-state} ?off-seat]
   [:div
    (if (nil? status)
-     [render-empty-seat]
+     [render-empty-seat seat ?off-seat]
      [render-player-avatar player-state])])
-
-(defn table-seat-list
-  [{:keys [players]}]
-  [:div.bg-gray-800.flex-1.flex.flex-col.items-stretch.p-12.text-white
-   (let [cnt (count (filter :name players))]
-     [:div]
-     [:div.ml-3 "Players: " cnt])
-   (for [{:keys [name props seat stack position]} players]
-     ^{:key (str seat)}
-     [:div
-      (if name
-        ;; player on seat
-        [:div.m-3.w-full.flex.justify-around.items-center.h-12.border
-         {:class (if name
-                   ["bg-blue-800" "border-blue-900"]
-                   ["bg-green-700" "border-green-800"])}
-         [:div.w-24.flex.items-center
-          [:div.text-2xl (:player/avatar props)]
-          [:div.ml-2 name]]
-         [:div.w-16.text-center (or position "-")]
-         [:div.w-24 "Stack:" stack]]
-        ;; empty seat
-        [:div.m-3.w-full.flex.justify-center.items-center.h-12.border.bg-green-700.border-green-800.hover:bg-green-600.animate-pulse
-         {:class    (if name
-                      ["bg-blue-800" "border-blue-900"]
-                      ["bg-green-700" "border-green-800"]),
-          :on-click (partial on-buyin {:seat seat})}
-         "Join!"])])])
 
 ;; Render table with 6 seats
 
 (defn render-players
   [{:keys [status current-player players]}]
-  (let [street (u/game-status->street status)]
+  (let [street    (u/game-status->street status)
+        ?off-seat (= :player-status/off-seat (:status current-player))]
     [:<>
-     (for [[idx {:keys [bets id position], :local/keys [last-message], :as p}] (map-indexed
-                                                                                vector
-                                                                                players)]
+     (for [[idx {:keys [bets id], :local/keys [last-message], :as p}] (map-indexed
+                                                                       vector
+                                                                       players)]
        (let [class-map (-> (+ 1 idx)
                            (seat->class))
              is-current-player? (= (:id current-player) id)]
          ^{:key (str idx)}
          [:div
-          {:class (class-map :root)}
+          {:class (class-map (if ?off-seat :ob-root :root))}
           [:div.w-24.h-24.absolute.-top-12.-left-12
            [render-player-seat
             (assoc p
                    :local/is-current-player is-current-player?
-                   :local/game-status       status)]
+                   :local/game-status       status)
+            ?off-seat]
            (when street
              (when-let [bet (last bets)]
                [:div
-                {:class (class-map :bet)}
+                {:class (class-map (if ?off-seat :ob-bet :bet))}
                 [stack {:value bet}]]))
            (when last-message
              [:div.absolute.inset-x-0.top-12.bottom-0
@@ -345,7 +347,8 @@
 
 (defn table-6
   [{:keys [awards players runner-cards-deals return-bets
-           community-cards pots current-player status]}]
+           community-cards pots current-player status ?off-seat]}]
+
   [:div.flex-1.flex.items-stretch.p-16.bg-transition
    [:div.flex-1.relative
     [render-players
@@ -359,25 +362,20 @@
       :runner-cards-deals runner-cards-deals}]
     (when (seq awards)
       [render-winner-awards
-       {:pots    pots,
-        :players players,
-        :awards  awards}])
+       {:pots      pots,
+        :players   players,
+        :?off-seat ?off-seat}])
     (when (seq return-bets)
       [render-return-bets
        {:players     players,
-        :return-bets return-bets}])
+        :return-bets return-bets,
+        :?off-seat   ?off-seat}])
     (when (= status :game-status/preflop)
-      [render-deal-card-animation players])]])
-
-(defn table-loading
-  []
-  [:div.bg-blue-900.flex.place-content-center.text-2xl
-   "LOADING"])
+      [render-deal-card-animation
+       {:players   players,
+        :?off-seat ?off-seat}])]])
 
 (defn table
-  [{:keys [size current-player], :or {size 6}, :as props}]
-  (case size
-    6
-    (if (= :player-status/off-seat (:status current-player))
-      [table-seat-list props]
-      [table-6 props])))
+  [props]
+  (let [?off-seat (= :player-status/off-seat (get-in props [:current-player :status]))]
+    [table-6 (assoc props :?off-seat ?off-seat)]))

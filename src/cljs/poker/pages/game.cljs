@@ -112,28 +112,26 @@
               :history [history-popup {:on-close close-popup, :on-toggle toggle-popup}]
               :help    [help {:on-close close-popup, :on-toggle toggle-popup}])])
          (when opts
-           [table
-            {:size               seats-count,
-             :players            table-players,
-             :pots               pots,
-             :runner-cards-deals runner-cards-deals,
-             :community-cards    community-cards,
-             :status             status,
-             :awards             winner-awards,
-             :return-bets        return-bets,
-             :current-player     (get players player-id),
-             :has-all-in?        has-all-in?,
-             :showdown           showdown}])
-         (let [current-player (get players player-id)]
-           (when (and
-                  opts
-                  (not= :player-status/off-seat (:status current-player)))
-             [panel
-              {:status         status,
-               :messages       @messages*,
-               :current-player current-player,
-               :players        (vals players),
-               :opts           opts,
-               :pots           pots,
-               :min-raise      min-raise,
-               :street-bet     street-bet}]))]))))
+           (let [current-player (get players player-id)]
+             [:<>
+              [table
+               {:size               seats-count,
+                :players            table-players,
+                :pots               pots,
+                :runner-cards-deals runner-cards-deals,
+                :community-cards    community-cards,
+                :status             status,
+                :awards             winner-awards,
+                :return-bets        return-bets,
+                :current-player     (get players player-id),
+                :has-all-in?        has-all-in?,
+                :showdown           showdown}]
+              [panel
+               {:status         status,
+                :messages       @messages*,
+                :current-player current-player,
+                :players        (vals players),
+                :opts           opts,
+                :pots           pots,
+                :min-raise      min-raise,
+                :street-bet     street-bet}]]))]))))

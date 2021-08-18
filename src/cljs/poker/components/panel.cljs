@@ -153,6 +153,10 @@
         [message-box messages]]]
       [:div.h-24
        (cond
+         (= :player-status/off-seat status)
+         [:div.text-md.flex.justify-center.items-center.h-24.text-gray-500
+          "Pick a seat to join"]
+
          (= game-status :game-status/showdown-prepare)
          (when (#{:player-status/acted} status)
            [showdown-button-group])
