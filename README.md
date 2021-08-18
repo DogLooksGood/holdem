@@ -1,5 +1,6 @@
 # Holdem
 
+![screencast](https://user-images.githubusercontent.com/11796018/129846225-13638922-b1f4-4e04-96dd-2a4129192860.png "Screencast")
 A lightweight Texas Hold'em Poker game, WIP.
 
 ## Install requirements
