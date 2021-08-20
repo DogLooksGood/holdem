@@ -24,6 +24,8 @@
 (defn game-index-page
   [_req]
   {:status 200,
+   ;; This page should not be cached.
+   :headers {"Cache-control" "no-cache"}
    :body   (let [csrf-token
                  (force
                   ring.middleware.anti-forgery/*anti-forgery-token*)]
