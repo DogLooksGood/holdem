@@ -16,8 +16,8 @@
 (def seat->class
   {1 {:root    ["absolute" "left-1/2" "top-full" "md:left-1/5"],
       :ob-root ["absolute" "left-1/2" "top-full"],
-      :bet     ["absolute" "right-1/2" "-top-12"],
-      :ob-bet  ["absolute" "right-1/2" "-top-12"]},
+      :bet     ["absolute" "right-1/2" "-top-12" "md:-top-16"],
+      :ob-bet  ["absolute" "right-1/2" "-top-12" "md:-top-16"]},
 
    2 {:root    ["absolute" "left-0" "top-4/5" "md:top-1/3"],
       :ob-root ["absolute" "left-0" "top-4/5"],
@@ -40,7 +40,7 @@
       :ob-bet  ["absolute" "bottom-0" "-left-6"]},
 
    6 {:root    ["absolute" "left-full" "top-4/5" "md:top-1/3"],
-      :ob-root ["absolute" "left-full" "top-4/5"],
+      :ob-root ["absolute" "left-full" "top-4/5" "md:top-1/2"],
       :bet     ["absolute" "bottom-0" "-left-6" "md:-left-12"],
       :ob-bet  ["absolute" "bottom-0" "-left-6"]}})
 
