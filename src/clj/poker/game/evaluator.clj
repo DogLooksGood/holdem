@@ -20,14 +20,19 @@
    :pair            1,
    :highcard        0})
 
+(defn sort-by-kinds
+  [cards]
+  (->> cards
+       (sort-by (comp kind->order ->kind))
+       (reverse)))
+
 (defn get-sorted-cards
   [cards]
   (->> cards
        (group-by ->kind)
        (sort-by (juxt (comp count val) (comp kind->order key)))
        (reverse)
-       (mapcat val)
-       (take 5)))
+       (mapcat val)))
 
 (defn get-flush-suit-cards
   [cards]
@@ -79,7 +84,6 @@
                        first)]
         (when picks
           {:category :royal-flush,
-           ;; :rank [],
            :picks    picks}))
       ;; straight flush
       (when-let [picks (->> straights
@@ -87,44 +91,37 @@
                                         (count (set/intersection (set flush-suit-cards) (set %)))))
                             first)]
         {:category :straight-flush,
-         ;; :rank [(->kind (first picks))],
          :picks    picks})
       ;; four of a kind
       (when (apply = (take 4 sorted-kinds))
         {:category :four-of-a-kind,
-         ;; :rank     [(nth sorted-kinds 0) (nth sorted-kinds 4)],
          :picks    (vec (take 5 sorted-cards))})
       ;; full house
       (when (and (apply = (map sorted-kinds [0 1 2])) (apply = (map sorted-kinds [3 4])))
         {:category :full-house,
-         ;; :rank     (mapv sorted-kinds [0 3]),
          :picks    (vec (take 5 sorted-cards))})
       ;; flush
       (when flush-suit-cards
         {:category :flush,
-         ;; :rank (mapv ->kind flush-suit-cards),
          :picks    flush-suit-cards})
       ;; straight
       (when-let [picks (first straights)]
         {:category :straight,
-         ;; :rank [(->kind (first picks))],
          :picks    picks})
       ;; three of a kind
       (when (apply = (map sorted-kinds [0 1 2]))
         {:category :three-of-a-kind,
-         ;; :rank     (mapv sorted-kinds [0 3 4]),
          :picks    (vec (take 5 sorted-cards))})
       ;; two pairs
       (when (and (apply = (map sorted-kinds [0 1])) (apply = (map sorted-kinds [2 3])))
+
         {:category :two-pairs,
-         ;; :rank     (mapv sorted-kinds [0 2 4]),
-         :picks    (vec (take 5 sorted-cards))})
+         :picks    (conj (vec (take 4 sorted-cards))
+                         (first (sort-by-kinds (drop 4 sorted-cards))))})
       ;; pair
       (when (apply = (map sorted-kinds [0 1]))
         {:category :pair,
-         ;; :rank (mapv sorted-kinds [0 2 3 4]),
          :picks    (vec (take 5 sorted-cards))})
       ;; highcard
       {:category :highcard,
-       ;; :rank     (vec (take 5 sorted-kinds)),
        :picks    (vec (take 5 sorted-cards))}))))
