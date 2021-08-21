@@ -137,7 +137,8 @@
   [{:keys [stack pot min-raise street-bet on-raise sb bb bet]}]
   (let [state* (reagent/atom {:status :idle,
                               :input  nil})
-        values (list-raise-values min-raise sb bb bet street-bet pot stack)]
+        values (list-raise-values min-raise sb bb bet street-bet pot stack)
+        min    (- (+ street-bet (or min-raise street-bet)) bet)]
     (fn []
       (let [{:keys [input status]} @state*
             on-change     (fn [e]
@@ -160,7 +161,7 @@
                {:type        "number",
                 :value       input,
                 :on-change   on-change,
-                :placeholder (str (or min-raise street-bet) " ~ " stack),
+                :placeholder (str min " ~ " stack),
                 :on-key-down #(when (= "Enter" (aget % "key")) (expand-or-bet))}]]
              [:div.flex-1.m-1.border.border-red-700.bg-red-800.hover:bg-red-500.shadow-xl.text-gray-200.text-md.rounded-sm.h-10.flex.items-center.justify-center.cursor-pointer
               {:on-click expand-or-bet}
