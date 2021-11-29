@@ -1,9 +1,5 @@
 # Holdem
 
-Now, the online demo is available!
-
-[Online Demo](https://holdem.fun)
-
 ![screencast](https://user-images.githubusercontent.com/11796018/129900764-999487ac-a8aa-4949-890b-afc5a0c3402c.png "Screencast")
 A lightweight Texas Hold'em Poker game, WIP.
 
